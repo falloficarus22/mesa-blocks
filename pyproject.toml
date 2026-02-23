@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "mesa-blocks"
+version = "0.1.0"
+packages = [{include = "mesa_blocks", from="src/"}]
+description = "A visual, block-based model builder for Mesa agent-based models."
+authors = []
+readme = "README.md"
+license = "Apache-2.0"
+keywords = ["mesa", "agent-based-model", "visual-programming", "no-code", "simulation", "abm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<4.0"
+mesa = ">=3.1.0"
+flask = ">=3.0.0"
+numpy = ">=2.0.0"
+
+[tool.poetry.scripts]
+mesa-blocks = "mesa_blocks.cli:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.2.0"
+ruff = ">=0.4.0"
+
+[tool.ruff]
+fix = true
+target-version = "py312"
+line-length = 99
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

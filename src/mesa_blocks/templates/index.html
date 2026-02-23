@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesa Blocks — Visual ABM Builder</title>
+    <meta name="description" content="Build agent-based models visually with drag-and-drop blocks. Powered by Mesa.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header id="app-header">
+        <div class="header-left">
+            <span class="logo">🧱</span>
+            <h1 class="app-title">Mesa Blocks</h1>
+            <span class="app-version">v0.1</span>
+        </div>
+        <div class="header-center">
+            <button id="btn-run" class="toolbar-btn btn-run" title="Run simulation (Ctrl+R)">
+                <span class="btn-icon">▶</span> Run
+            </button>
+            <button id="btn-pause" class="toolbar-btn btn-pause" disabled title="Pause simulation">
+                <span class="btn-icon">⏸</span> Pause
+            </button>
+            <button id="btn-stop" class="toolbar-btn btn-stop" disabled title="Stop simulation">
+                <span class="btn-icon">⏹</span> Stop
+            </button>
+            <div class="speed-control">
+                <label for="speed-slider" class="speed-label">Speed</label>
+                <input type="range" id="speed-slider" min="20" max="500" value="150" step="10">
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="btn-export" class="toolbar-btn btn-export" title="Export Python code (Ctrl+E)">
+                <span class="btn-icon">📄</span> Export
+            </button>
+            <button id="btn-save" class="toolbar-btn" title="Save config">
+                <span class="btn-icon">💾</span> Save
+            </button>
+            <button id="btn-load" class="toolbar-btn" title="Load config">
+                <span class="btn-icon">📂</span> Load
+            </button>
+            <input type="file" id="file-load" accept=".json" style="display:none">
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div id="app-body">
+        <!-- Left: Toolbox -->
+        <aside id="toolbox">
+            <div class="toolbox-header">Blocks</div>
+
+            <details class="toolbox-category" open>
+                <summary><span class="cat-icon">🏗️</span> Model</summary>
+                <div class="toolbox-item" draggable="true" data-block-type="model">
+                    <span class="item-icon" style="--item-color: #6366f1;">🏗️</span>
+                    <span class="item-label">Model</span>
+                </div>
+            </details>
+
+            <details class="toolbox-category" open>
+                <summary><span class="cat-icon">🗺️</span> Space</summary>
+                <div class="toolbox-item" draggable="true" data-block-type="grid">
+                    <span class="item-icon" style="--item-color: #10b981;">🗺️</span>
+                    <span class="item-label">Grid Space</span>
+                </div>
+            </details>
+
+            <details class="toolbox-category" open>
+                <summary><span class="cat-icon">👤</span> Agents</summary>
+                <div class="toolbox-item" draggable="true" data-block-type="agent">
+                    <span class="item-icon" style="--item-color: #f59e0b;">👤</span>
+                    <span class="item-label">Agent Type</span>
+                </div>
+            </details>
+
+            <details class="toolbox-category" open>
+                <summary><span class="cat-icon">⚡</span> Behaviors</summary>
+                <div class="toolbox-item" draggable="true" data-block-type="move_random">
+                    <span class="item-icon" style="--item-color: #ec4899;">🔀</span>
+                    <span class="item-label">Move Random</span>
+                </div>
+                <div class="toolbox-item" draggable="true" data-block-type="move_to_empty">
+                    <span class="item-icon" style="--item-color: #ec4899;">➡️</span>
+                    <span class="item-label">Move to Empty</span>
+                </div>
+                <div class="toolbox-item" draggable="true" data-block-type="die">
+                    <span class="item-icon" style="--item-color: #ef4444;">💀</span>
+                    <span class="item-label">Die</span>
+                </div>
+                <div class="toolbox-item" draggable="true" data-block-type="reproduce">
+                    <span class="item-icon" style="--item-color: #22c55e;">🔄</span>
+                    <span class="item-label">Reproduce</span>
+                </div>
+            </details>
+
+            <details class="toolbox-category" open>
+                <summary><span class="cat-icon">📊</span> Data</summary>
+                <div class="toolbox-item" draggable="true" data-block-type="count_agents">
+                    <span class="item-icon" style="--item-color: #8b5cf6;">📊</span>
+                    <span class="item-label">Count Agents</span>
+                </div>
+            </details>
+        </aside>
+
+        <!-- Center: Workspace -->
+        <main id="workspace">
+            <div id="workspace-canvas">
+                <svg id="connections-svg"></svg>
+                <!-- Blocks are added here dynamically -->
+            </div>
+            <div id="workspace-hint">
+                <span class="hint-icon">🧱</span>
+                <p>Drag blocks from the toolbox to get started</p>
+            </div>
+        </main>
+
+        <!-- Right: Panel -->
+        <aside id="right-panel">
+            <!-- Properties -->
+            <div id="properties-panel" class="panel-section">
+                <div class="panel-header">Properties</div>
+                <div id="properties-content">
+                    <p class="placeholder-text">Select a block to edit its properties</p>
+                </div>
+            </div>
+
+            <!-- Live Preview -->
+            <div id="preview-panel" class="panel-section">
+                <div class="panel-header">
+                    Live Preview
+                    <span id="step-counter" class="step-badge">Step: 0</span>
+                </div>
+                <div id="preview-stats">
+                    <span id="agent-count-display">Agents: 0</span>
+                </div>
+                <canvas id="grid-canvas" width="280" height="280"></canvas>
+                <canvas id="chart-canvas" width="280" height="120"></canvas>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Bottom: Code Panel -->
+    <div id="code-panel">
+        <div class="code-header">
+            <span class="code-title">Generated Python Code</span>
+            <div class="code-actions">
+                <button id="btn-copy-code" class="code-btn" title="Copy to clipboard">📋 Copy</button>
+                <button id="btn-download-code" class="code-btn" title="Download .py file">⬇️ Download</button>
+                <button id="btn-toggle-code" class="code-btn" title="Toggle code panel">▼</button>
+            </div>
+        </div>
+        <pre id="code-output"><code id="code-content"><!-- Generated code appears here --></code></pre>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/blocks.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/connections.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/properties.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/preview.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
