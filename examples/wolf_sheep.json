@@ -1,0 +1,124 @@
+{
+  "blocks": [
+    {
+      "id": "b1",
+      "type": "model",
+      "x": 300,
+      "y": 150,
+      "properties": {
+        "seed": 42,
+        "steps": 200
+      }
+    },
+    {
+      "id": "b2",
+      "type": "grid",
+      "x": 50,
+      "y": 50,
+      "properties": {
+        "width": 25,
+        "height": 25,
+        "torus": true,
+        "neighborhood": "moore"
+      }
+    },
+    {
+      "id": "b3",
+      "type": "agent",
+      "x": 50,
+      "y": 250,
+      "properties": {
+        "name": "Sheep",
+        "count": 60,
+        "color": "#34d399"
+      }
+    },
+    {
+      "id": "b4",
+      "type": "agent",
+      "x": 550,
+      "y": 250,
+      "properties": {
+        "name": "Wolf",
+        "count": 15,
+        "color": "#f87171"
+      }
+    },
+    {
+      "id": "b5",
+      "type": "move_random",
+      "x": 50,
+      "y": 450,
+      "properties": {}
+    },
+    {
+      "id": "b6",
+      "type": "reproduce",
+      "x": 250,
+      "y": 450,
+      "properties": {
+        "probability": 0.04
+      }
+    },
+    {
+      "id": "b7",
+      "type": "move_random",
+      "x": 550,
+      "y": 450,
+      "properties": {}
+    },
+    {
+      "id": "b8",
+      "type": "count_agents",
+      "x": 550,
+      "y": 50,
+      "properties": {
+        "label": "Population"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "from": "b1",
+      "fromPort": "space",
+      "to": "b2",
+      "toPort": "model"
+    },
+    {
+      "from": "b1",
+      "fromPort": "agents",
+      "to": "b3",
+      "toPort": "model"
+    },
+    {
+      "from": "b1",
+      "fromPort": "agents",
+      "to": "b4",
+      "toPort": "model"
+    },
+    {
+      "from": "b3",
+      "fromPort": "behaviors",
+      "to": "b5",
+      "toPort": "agent"
+    },
+    {
+      "from": "b3",
+      "fromPort": "behaviors",
+      "to": "b6",
+      "toPort": "agent"
+    },
+    {
+      "from": "b4",
+      "fromPort": "behaviors",
+      "to": "b7",
+      "toPort": "agent"
+    },
+    {
+      "from": "b1",
+      "fromPort": "data",
+      "to": "b8",
+      "toPort": "model"
+    }
+  ]
+}
