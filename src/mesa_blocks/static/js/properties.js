@@ -18,13 +18,15 @@ class PropertiesManager {
         const info = document.createElement('div');
         info.className = 'prop-block-info';
         info.innerHTML = `
-            <div class="prop-block-icon">${block.def.icon}</div>
+            <div class="prop-block-icon"><i data-lucide="${block.def.icon}"></i></div>
             <div>
                 <div class="prop-block-name">${block.def.label}</div>
                 <div class="prop-block-type">ID: ${block.id}</div>
             </div>
         `;
         this.container.appendChild(info);
+
+        if (window.lucide) window.lucide.createIcons();
 
         // Properties
         if (!block.def.props || block.def.props.length === 0) {

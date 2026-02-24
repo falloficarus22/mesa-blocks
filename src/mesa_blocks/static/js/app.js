@@ -47,7 +47,9 @@ class App {
         document.getElementById('btn-toggle-code').onclick = () => {
             const panel = document.getElementById('code-panel');
             panel.classList.toggle('collapsed');
-            document.getElementById('btn-toggle-code').innerText = panel.classList.contains('collapsed') ? '▲' : '▼';
+            const isCollapsed = panel.classList.contains('collapsed');
+            document.getElementById('btn-toggle-code').innerHTML = `<i data-lucide="chevron-${isCollapsed ? 'up' : 'down'}"></i>`;
+            if (window.lucide) window.lucide.createIcons();
         };
 
         document.getElementById('btn-copy-code').onclick = () => this.copyCode();
@@ -250,8 +252,14 @@ class App {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.innerText = message;
+
+        let icon = 'info';
+        if (type === 'success') icon = 'check-circle';
+        if (type === 'error') icon = 'alert-circle';
+
+        toast.innerHTML = `<i data-lucide="${icon}" class="toast-icon"></i> <span>${message}</span>`;
         container.appendChild(toast);
+        if (window.lucide) window.lucide.createIcons();
 
         setTimeout(() => {
             toast.classList.add('hide');

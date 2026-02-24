@@ -1,4 +1,4 @@
-# Mesa Blocks 🧱
+# Mesa Blocks
 
 **Visual, block-based model builder for Mesa agent-based models.**
 
@@ -8,17 +8,17 @@ Mesa Blocks allows you to rapidly prototype agent-based models by dragging and d
 
 ## Features
 
--   🏗️ **Visual Editor**: Drag blocks onto a canvas and wire them together to define your model.
--   ▶️ **Live Preview**: Run simulations directly in the browser with real-time grid and chart visualizations.
--   📄 **Code Generation**: Instant preview of runnable Python code that matches your visual model.
--   💾 **Save/Load**: Export your model configurations as JSON to share or resume later.
--   🐍 **Standard Mesa**: Generated code uses standard `mesa.Model` and `mesa.Agent` patterns.
+-   **Visual Editor**: Drag blocks onto a canvas and wire them together to define your model.
+-   **Live Preview**: Run simulations directly in the browser with real-time grid and chart visualizations.
+-   **Code Generation**: Instant preview of runnable Python code that matches your visual model.
+-   **Save/Load**: Export your model configurations as JSON to share or resume later.
+-   **Standard Mesa**: Generated code uses standard `mesa.Model` and `mesa.Agent` patterns.
 
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/youruser/mesa-blocks
+git clone https://github.com/falloficarus22/mesa-blocks
 cd mesa-blocks
 
 # Install in editable mode

@@ -7,7 +7,7 @@ const BLOCK_DEFS = {
     model: {
         category: "model",
         label: "Model",
-        icon: "🏗️",
+        icon: "box",
         color: "#6366f1",
         outputs: [
             { id: "space", label: "Space", type: "space" },
@@ -22,7 +22,7 @@ const BLOCK_DEFS = {
     grid: {
         category: "space",
         label: "Grid Space",
-        icon: "🗺️",
+        icon: "map",
         color: "#10b981",
         inputs: [
             { id: "model", label: "Model", type: "space" }
@@ -37,7 +37,7 @@ const BLOCK_DEFS = {
     agent: {
         category: "agent",
         label: "Agent Type",
-        icon: "👤",
+        icon: "user",
         color: "#f59e0b",
         inputs: [
             { id: "model", label: "Model", type: "agent" }
@@ -54,7 +54,7 @@ const BLOCK_DEFS = {
     move_random: {
         category: "behavior",
         label: "Move Random",
-        icon: "🔀",
+        icon: "shuffle",
         color: "#ec4899",
         inputs: [
             { id: "agent", label: "Agent", type: "behavior" }
@@ -64,7 +64,7 @@ const BLOCK_DEFS = {
     move_to_empty: {
         category: "behavior",
         label: "Move to Empty",
-        icon: "➡️",
+        icon: "arrow-right",
         color: "#ec4899",
         inputs: [
             { id: "agent", label: "Agent", type: "behavior" }
@@ -74,7 +74,7 @@ const BLOCK_DEFS = {
     die: {
         category: "behavior",
         label: "Die",
-        icon: "💀",
+        icon: "skull",
         color: "#ef4444",
         inputs: [
             { id: "agent", label: "Agent", type: "behavior" }
@@ -86,7 +86,7 @@ const BLOCK_DEFS = {
     reproduce: {
         category: "behavior",
         label: "Reproduce",
-        icon: "🔄",
+        icon: "refresh-cw",
         color: "#22c55e",
         inputs: [
             { id: "agent", label: "Agent", type: "behavior" }
@@ -98,7 +98,7 @@ const BLOCK_DEFS = {
     count_agents: {
         category: "data",
         label: "Count Agents",
-        icon: "📊",
+        icon: "bar-chart-3",
         color: "#8b5cf6",
         inputs: [
             { id: "model", label: "Model", type: "data" }
@@ -118,7 +118,7 @@ class Block {
         this.workspace = workspace;
         this.def = BLOCK_DEFS[type];
         this.properties = {};
-        
+
         // Initialize default properties
         if (this.def.props) {
             this.def.props.forEach(p => {
@@ -138,7 +138,7 @@ class Block {
         el.style.left = `${this.x}px`;
         el.style.top = `${this.y}px`;
         el.style.setProperty('--block-color', this.def.color);
-        
+
         // Convert hex to RGB for semi-transparent glow
         const r = parseInt(this.def.color.slice(1, 3), 16);
         const g = parseInt(this.def.color.slice(3, 5), 16);
@@ -148,19 +148,19 @@ class Block {
         const header = document.createElement('div');
         header.className = 'block-header';
         header.innerHTML = `
-            <span class="block-icon">${this.def.icon}</span>
+            <span class="block-icon"><i data-lucide="${this.def.icon}"></i></span>
             <span class="block-label">${this.def.label}</span>
         `;
-        
+
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'block-delete';
-        deleteBtn.innerHTML = '×';
+        deleteBtn.innerHTML = '<i data-lucide="x"></i>';
         deleteBtn.onclick = (e) => {
             e.stopPropagation();
             this.workspace.removeBlock(this.id);
         };
         header.appendChild(deleteBtn);
-        
+
         const body = document.createElement('div');
         body.className = 'block-body';
 
@@ -184,7 +184,7 @@ class Block {
 
         body.appendChild(portsIn);
         body.appendChild(portsOut);
-        
+
         el.appendChild(header);
         el.appendChild(body);
 
@@ -206,7 +206,7 @@ class Block {
 
         const dot = document.createElement('span');
         dot.className = 'port-dot';
-        
+
         const label = document.createElement('span');
         label.className = 'port-label';
         label.innerText = portDef.label;
@@ -233,11 +233,11 @@ class Block {
 
         this.element.onmousedown = (e) => {
             if (e.target.closest('.port') || e.target.closest('.block-delete')) return;
-            
+
             isDragging = true;
             this.element.classList.add('dragging');
             this.workspace.selectBlock(this.id);
-            
+
             startX = e.clientX - this.x;
             startY = e.clientY - this.y;
 
@@ -245,7 +245,7 @@ class Block {
                 if (!isDragging) return;
                 this.x = e.clientX - startX;
                 this.y = e.clientY - startY;
-                
+
                 // Snap to grid (optional, but good for neatness)
                 // this.x = Math.round(this.x / 20) * 20;
                 // this.y = Math.round(this.y / 20) * 20;
@@ -302,11 +302,11 @@ class Workspace {
         this.blocks = new Map();
         this.selectedBlockId = null;
         this.nextBlockId = 1;
-        
+
         // Modules will be initialized in app.js
-        this.connections = null; 
+        this.connections = null;
         this.properties = null;
-        
+
         this.initEvents();
     }
 
@@ -349,12 +349,18 @@ class Workspace {
             block.properties = { ...block.properties, ...properties };
         }
         this.blocks.set(blockId, block);
-        
+
         // Hide hint if it was visible
         const hint = document.getElementById('workspace-hint');
         if (hint) hint.classList.add('hidden');
-        
+
         this.selectBlock(blockId);
+
+        // Initialize new icons
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
         this.onConfigChanged();
         return block;
     }
@@ -362,11 +368,11 @@ class Workspace {
     removeBlock(id) {
         const block = this.blocks.get(id);
         if (!block) return;
-        
+
         this.connections.removeBlockConnections(id);
         block.element.remove();
         this.blocks.delete(id);
-        
+
         if (this.selectedBlockId === id) {
             this.selectBlock(null);
         }
@@ -375,7 +381,7 @@ class Workspace {
             const hint = document.getElementById('workspace-hint');
             if (hint) hint.classList.remove('hidden');
         }
-        
+
         this.onConfigChanged();
     }
 
@@ -384,9 +390,9 @@ class Workspace {
             const old = this.blocks.get(this.selectedBlockId);
             if (old) old.element.classList.remove('selected');
         }
-        
+
         this.selectedBlockId = id;
-        
+
         if (id) {
             const block = this.blocks.get(id);
             if (block) {
@@ -432,7 +438,7 @@ class Workspace {
         if (this.connections) {
             this.connections.loadJSON(config.connections);
         }
-        
+
         this.onConfigChanged();
     }
 }
